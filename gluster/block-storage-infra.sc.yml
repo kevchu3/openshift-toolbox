@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  creationTimestamp: null
+  name: block-storage-infra
+parameters:
+  chapauthenabled: "true"
+  hacount: "3"
+  restsecretname: heketi-infrastorage-admin-secret-block
+  restsecretnamespace: storage-infra
+  resturl: http://heketi-infrastorage.storage-infra.svc.cluster.local:8080
+  restuser: admin
+provisioner: gluster.org/glusterblock
+reclaimPolicy: Delete
