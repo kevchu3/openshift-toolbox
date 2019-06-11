@@ -1,0 +1,4 @@
+# Clear pagecache
+- hosts: nodes
+  roles:
+    - clearcache

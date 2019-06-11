@@ -1,0 +1,12 @@
+- name: Copy clearcache.sh
+  copy:
+    src: clearcache.sh
+    dest: /root/clearcache.sh
+    mode: '755'
+
+- name: Clear pagecache every night at 2 am
+  cron:
+    name: "clear pagecache"
+    minute: "0"
+    hour: "2"
+    job: "/root/clearcache.sh"
