@@ -1,0 +1,80 @@
+# Prune objects as described in Cluster Administration Guide:
+#
+#   https://access.redhat.com/documentation/en-us/openshift_container_platform/3.11/html/cluster_administration/admin-guide-pruning-resources
+#
+- hosts: masters[0]
+  tasks:
+  - name: Check if image-pruner service account exists in default namespace
+    command: >-
+      oc get sa image-pruner -n default
+    register: get_image_pruner_sa
+    changed_when: false
+    failed_when: false
+
+  - name: Create image-pruner service account
+    shell: >-
+      oc create sa image-pruner -n default
+    when: get_image_pruner_sa.rc != 0
+
+  - name: Apply system:image-pruner cluster role to image-pruner sa
+    shell: >-
+      oc adm policy add-cluster-role-to-user system:image-pruner system:serviceaccount:default:image-pruner
+    when: get_image_pruner_sa.rc != 0
+
+  - name: Get image-pruner token name
+    shell: >
+      oc get sa -n default image-pruner
+      --template '{{ '{{ range .secrets }}{{ .name }}{{ "\n" }}{{ end }}' }}'
+      | grep image-pruner-token-
+    changed_when: false
+    register: get_image_pruner_token_name
+
+  - name: Get image-pruner token
+    shell: >
+      oc get secret {{ get_image_pruner_token_name.stdout_lines[0] }}
+      -n default
+      --template '{{ '{{ .data.token }}' }}' | base64 -d
+    changed_when: false
+    register: get_image_pruner_token
+
+  - name: Prune builds
+    command: >
+      oc adm prune builds
+      --orphans
+      --keep-complete=3
+      --keep-failed=3
+      --keep-younger-than=4h
+      --confirm
+    register: prune_build
+
+  - name: Status of Build Prune
+    debug:
+      msg: "{{ prune_build.stdout }}"
+
+  - name: Prune deployments
+    command: >
+      oc adm prune deployments
+      --orphans
+      --keep-complete=5
+      --keep-failed=2
+      --keep-younger-than=4h
+      --confirm
+    register: prune_deployment
+
+  - name: Status of Deployment Prune
+    debug:
+      msg: "{{ prune_deployment.stdout }}"
+
+  - name: Prune images
+    command: >
+      oc adm prune images
+      --keep-tag-revisions="5"
+      --keep-younger-than=12h
+      --confirm
+      --token={{ get_image_pruner_token.stdout | quote }}
+    register: prune_image
+
+  - name: Status of Image Prune
+    debug:
+      msg: "{{ prune_image.stdout }}"
+
