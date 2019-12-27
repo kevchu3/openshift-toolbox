@@ -1,0 +1,3 @@
+# To retrieve the current list of images the samples operator is managing, you can run:
+
+oc get is -n openshift -o=jsonpath='{.items[*].spec.tags[*].from.name}'
