@@ -1,0 +1,5 @@
+# show status of whether machineconfigpool is updating
+oc get machineconfigpool
+
+# show updated machine count in progress
+oc get machineconfigpool -o=jsonpath="{.items[*].status.updatedMachineCount}"
