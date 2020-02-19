@@ -3,3 +3,16 @@ oc get machineconfigpool
 
 # show updated machine count in progress
 oc get machineconfigpool -o=jsonpath="{.items[*].status.updatedMachineCount}"
+
+# in the event that machine-config-operator fails with:
+# Message:               Unable to apply 4.3.1: timed out waiting for the condition during syncRequiredMachineConfigPools: error pool master is not ready, retrying. Status: (pool degraded: true total: 3, ready 2, updated: 2, unavailable: 0)
+
+oc describe clusteroperator/machine-config
+
+    Master:           pool is degraded because nodes fail with "1 nodes are reporting degraded status on sync": "Node master3.ocp4.kechung.tamlab.rdu2.redhat.com is reporting: \"unexpected on-disk state validating against rendered-master-c02d2708ebaa667fd2a718826d9a3ae7\""
+    Worker:           all 3 nodes are at latest configuration rendered-worker-106eb94124d367ea9c79265af1410541
+
+
+for i in $(oc get pods -n openshift-machine-config-operator -l k8s-app=machine-config-daemon -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | xargs); do oc rsh -n openshift-machine-config-operator $i chroot /rootfs mkdir -p /run/pivot; oc rsh -n openshift-machine-config-operator $i chroot /rootfs touch /run/pivot/reboot-needed; done
+
+rpm-ostree rollback --reboot
