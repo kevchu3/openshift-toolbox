@@ -1,0 +1,3 @@
+# some examples below:
+oc debug node/<node-name> -- chroot /host; cat /etc/resolv.conf
+oc debug node/<node-name> -- chroot /host; systemctl status NetworkManager

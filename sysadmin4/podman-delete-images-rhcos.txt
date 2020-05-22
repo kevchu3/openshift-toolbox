@@ -1,0 +1,2 @@
+# delete unused images in RHCOS node's podman
+oc debug node/<node-name> -- chroot /host; podman rmi --all
