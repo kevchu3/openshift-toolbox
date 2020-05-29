@@ -1,0 +1,89 @@
+# support for manifest lists was merged with this commit:
+https://github.com/containers/image/pull/400
+
+# to test whether a repository supports manifest lists, run the following skopeo inspect command
+# - "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json" = supported
+# - "mediaType": "application/vnd.docker.distribution.manifest.v2+json" = either this is a single architecture image or manifest lists not supported
+
+
+# skopeo inspect --tls-verify=false --raw  docker://docker.io/grafana/grafana:7.0.0| jq                            
+
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+  "manifests": [
+    {
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1579,
+      "digest": "sha256:24f6c93f779a0430d58c71c4a7cdb729c94daceda099ae3c44cc712875f13f00",
+      "platform": {
+        "architecture": "amd64",
+        "os": "linux"
+      }
+    },
+    {
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1574,
+      "digest": "sha256:8fe33e3234d1f32cd8db5f4fb599df2f2b242c1f501d239f0857658955692121",
+      "platform": {
+        "architecture": "arm",
+        "os": "linux"
+      }
+    },
+    {
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "size": 1574,
+      "digest": "sha256:c518009f31a63a73633e3183ed6d6b1cad6f8d4444a4b019e2e556a341d1f8f8",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      }
+    }
+  ]
+}
+
+
+# skopeo inspect --tls-verify=false --raw  docker://nexus.fsi.tamlab.rdu2.redhat.com:5004/grafana/grafana:7.0.0| jq
+
+{
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+  "config": {
+    "mediaType": "application/vnd.docker.container.image.v1+json",
+    "size": 4690,
+    "digest": "sha256:4c8a5fede0b0982d4588a77a80aeeb5bc572e333a557615f0753aaed7e6fb901"
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 2886668,
+      "digest": "sha256:395d873e3f39aca0f296f8502629c6ece454de1c483033a3fbed63f1ed9cb719"
+    },
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 1805271,
+      "digest": "sha256:6359ae314676a7fe62db8665362ccb13ad4e7f235b5390be8000edf6928e0870"
+    },
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 8363740,
+      "digest": "sha256:b101b3a980cac74d5345a18e0692558251070ba4c252a8e304be5562e079ab61"
+    },
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 45434920,
+      "digest": "sha256:5d1579f3d79cda005208b8630a52e54e98ac929ebe58fd10d61c70dbbdc9689b"
+    },
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 11850,
+      "digest": "sha256:b1b6e7ee1472766a174736dde1f6219160cc246a1157eb37abc85d5dfcfb835f"
+    },
+    {
+      "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+      "size": 1318,
+      "digest": "sha256:0b81234b9034b38f3f353bde745d968223996bb8da2135cf9f9b81784a33df72"
+    }
+  ]
+}
+
